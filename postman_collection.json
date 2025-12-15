@@ -1,0 +1,191 @@
+{
+    "info": {
+        "name": "mysample_test API",
+        "_postman_id": "c3b9f6b4-8f2a-4a5a-9e2b-1a2d3f4e5b6c",
+        "description": "Postman collection for mysample_test Node app (login/logout/session)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Root",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3001/"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Form Schema",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3001/form/schema"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Submit Form",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{ \"fullName\": \"Alice\", \"email\": \"a@example.com\", \"age\": 30, \"message\": \"hello\" }"
+                },
+                "url": {
+                    "raw": "http://localhost:3001/form/submit"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "List Submissions",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3001/form/submissions"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Health",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3001/health"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Login Page",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3001/login.html"
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Login (POST)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3001/login"
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test('login responded', function () {",
+                            "  pm.response.to.have.status(200);",
+                            "});",
+                            "if (pm.response.code === 200) {",
+                            "  var json = pm.response.json();",
+                            "  if (json.user && json.user.username) pm.environment.set('loggedUser', json.user.username);",
+                            "}"
+                        ]
+                    }
+                }
+            ],
+            "response": []
+        },
+        {
+            "name": "Get Current User (/me)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3001/me"
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test('me status is 200 or 401', function () {",
+                            "  pm.expect([200,401]).to.include(pm.response.code);",
+                            "});"
+                        ]
+                    }
+                }
+            ],
+            "response": []
+        },
+        {
+            "name": "Logout (POST)",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3001/logout"
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test('logout returned 200', function () { pm.response.to.have.status(200); });"
+                        ]
+                    }
+                }
+            ],
+            "response": []
+        },
+        {
+            "name": "Echo (POST)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{ \"hello\": \"world\" }"
+                },
+                "url": {
+                    "raw": "http://localhost:3001/api/echo"
+                }
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3001"
+        }
+    ]
+}

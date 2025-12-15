@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0
+        }
+
+        .card {
+            width: 320px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 8px
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px
+        }
+
+        .msg {
+            margin-top: 10px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2 style="margin:0 0 10px 0">Sign in</h2>
+
+        <form id="loginForm">
+            <input name="username" id="username" placeholder="Username" required />
+            <input name="password" id="password" type="password" placeholder="Password" required />
+            <button type="submit">Login</button>
+        </form>
+        <div class="msg" id="msg"></div>
+
+        <div id="welcomeDiv" style="display:none; margin-top:10px;">
+            <p id="welcomeText"></p>
+            <div style="display:flex; gap:8px;">
+                <button id="openFormBtn">Open Form</button>
+                <button id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById('loginForm');
+            const msg = document.getElementById('msg');
+
+            async function showUserIfLoggedIn() {
+                try {
+                    const res = await fetch('/me', { credentials: 'same-origin' });
+                    if (res.ok) {
+                        const body = await res.json();
+                        form.style.display = 'none';
+                        document.getElementById('welcomeText').textContent = 'Welcome, ' + (body.user?.username || '');
+                        document.getElementById('welcomeDiv').style.display = 'block';
+                        msg.textContent = '';
+                        return true;
+                    }
+                } catch (e) { }
+                form.style.display = 'block';
+                document.getElementById('welcomeDiv').style.display = 'none';
+                return false;
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                msg.style.color = 'black';
+                msg.textContent = 'Logging in...';
+                const data = { username: document.getElementById('username').value, password: document.getElementById('password').value };
+                try {
+                    const res = await fetch('/login', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(data)
+                    });
+                    const body = await res.json();
+                    if (res.ok) {
+                        form.style.display = 'none';
+                        msg.textContent = '';
+                        document.getElementById('welcomeText').textContent = 'Welcome, ' + (body.user?.username || '');
+                        document.getElementById('welcomeDiv').style.display = 'block';
+                    } else {
+                        msg.style.color = 'red';
+                        msg.textContent = body.message || 'Login failed';
+                    }
+                } catch (err) {
+                    msg.style.color = 'red';
+                    msg.textContent = 'Network error';
+                }
+            });
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            const openFormBtn = document.getElementById('openFormBtn');
+
+            openFormBtn.addEventListener('click', () => {
+                // open the protected dynamic form page
+                window.location.href = '/dynamic-form';
+            });
+
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const res = await fetch('/logout', { method: 'POST', credentials: 'same-origin' });
+                    if (res.ok) {
+                        document.getElementById('welcomeDiv').style.display = 'none';
+                        form.style.display = 'block';
+                        msg.style.color = 'black';
+                        msg.textContent = 'You have been logged out.';
+                    } else {
+                        msg.style.color = 'red';
+                        msg.textContent = 'Logout failed';
+                    }
+                } catch (e) {
+                    msg.style.color = 'red';
+                    msg.textContent = 'Network error';
+                }
+            });
+
+            // on load, check session
+            showUserIfLoggedIn();
+        })();
+    </script>
+</body>
+
+</html>

@@ -7,9 +7,13 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "test:newman": "newman run postman_collection.json -e postman_environment.json"
   },
-  "keywords": ["nodejs", "microservice"],
+  "keywords": [
+    "nodejs",
+    "microservice"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -17,8 +21,11 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
+    "@types/express-session": "^1.18.2",
     "@types/node": "^20.0.0",
+    "express-session": "^1.18.2",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.0",
-    "ts-node": "^10.9.1"
+    "newman": "^5.3.0"
   }
 }
